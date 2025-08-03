@@ -106,6 +106,61 @@ LOG_LEVEL=DEBUG python server.py
 - 설명: 서버 헬스체크
 - 입력: 없음
 
+### 4) `commit_suggester`
+
+- 설명: Git 변경 내용을 읽어 현재 브랜치와 변경 파일을 기반으로 Conventional Commits 스타일 또는 사용자 정의 포맷에 맞는 커밋 메시지 후보를 생성합니다. 브랜치 이름이 `feature/xxx`이면 type을 `feat`으로, scope을 `xxx`으로 자동 추정합니다. 사용자가 `path`를 주면 그 경로의 Git 리포지터리를 대상으로 합니다.
+
+- 입력 주요 필드 예시:
+  ```json
+  {
+    "mode": "staged",                    # staged, working, range
+    "range": "HEAD~3..HEAD",             # mode=range일 때
+    "format": "{emoji} {type}({scope}): {subject}",  # 사용자 정의 템플릿
+    "rules": {
+      "types": ["feat","fix"],
+      "require_scope": true,
+      "subject_max": 50
+    },
+    "language": "ko",
+    "suggestions": 3,
+    "breaking": false,
+    "debug": true,
+    "path": "./"                         # 특정 하위 디렉토리 리포지터리 지정
+  }
+  ```
+
+- 기능 요약:
+  - 변경 파일/스테이징 상태 수집 (`mode`)
+  - 타입/스코프 추정: 파일명 + 브랜치명 기반 자동 보정
+  - 커밋 메시지 포맷: Conventional Commits 기본 또는 사용자 정의 템플릿 지원
+  - 경로 지정: `path`로 특정 서브디렉토리의 Git 리포지터리 사용
+  - 디버그 모드: 내부 결정 과정 로그 포함
+  - BREAKING CHANGE 포함 옵션
+
+- 예시 사용:
+  - 스테이징된 변경으로 한국어 Conventional Commit 메시지 2개 제안:
+    ```json
+    {"mode":"staged","language":"ko","suggestions":2}
+    ```
+  - `feature/user-auth` 브랜치에서 scope을 자동으로 `user-auth`로 잡고 메시지 생성:
+    ```json
+    {"mode":"staged","language":"en","rules":{"require_scope":true},"suggestions":1}
+    ```
+  - 하위 폴더 `subproject/` 리포지터리 기준으로 emoji 포함 포맷:
+    ```json
+    {
+      "mode":"working",
+      "format":"{emoji} {type}({scope}): {subject}",
+      "allow_emoji": true,
+      "path":"subproject/"
+    }
+    ```
+
+- 팁:
+  - `format` 템플릿에 들어가는 변수: `{type}`, `{scope}`, `{subject}`, `{emoji}`, `{branch}`, `{files_changed}`, `{body}` 등.  
+  - `rules.subject_max`을 줄이면 제목 길이를 제한할 수 있음.  
+  - `require_scope`을 켜면 scope이 없을 땐 기본 `core`가 들어감.
+
 ---
 
 ## 로깅
@@ -156,7 +211,7 @@ Claude Desktop에서 이 MCP 서버를 사용하려면 **데스크톱 설정 파
   // 기존 설정이 있다면 병합하세요
   "mcpServers": {
     "my-mcp-server": {
-      "command": "python",
+      "command": "python3",
       "args": ["server.py"],
       "cwd": "/Users/user/Desktop/DEV/my_mcp_server",
       "env": {
