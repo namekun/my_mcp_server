@@ -1,0 +1,59 @@
+# --- Python 기본 ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# 가상환경
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+
+# 캐시/툴링
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.coverage
+htmlcov/
+.tox/
+
+# IDE/OS
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# 로그 / 런타임
+logs/
+*.log
+*.tmp
+.cache/
+*.pid
+
+# 환경변수/시크릿
+.env
+.env.*
+*.key
+*.pem
+
+# 프로젝트 특화(필요 시)
+outputs/
+artifacts/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Poetry / PDM / UV (사용 시)
+.poetry/
+pdm.lock
+__pypackages__/
+uv.lock
